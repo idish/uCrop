@@ -355,7 +355,7 @@ public class UCropFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     mGestureCropImageView.setTargetAspectRatio(
-                            ((AspectRatioTextView) ((ViewGroup) v).getChildAt(0)).getAspectRatio(v.isSelected()));
+                            ((AspectRatioTextView) ((ViewGroup) v).getChildAt(0)).getAspectRatio(false));
                     mGestureCropImageView.setImageToWrapCropBounds();
                     if (!v.isSelected()) {
                         for (ViewGroup cropAspectRatioView : mCropAspectRatioViews) {
