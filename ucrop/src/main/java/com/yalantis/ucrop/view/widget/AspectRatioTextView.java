@@ -161,7 +161,14 @@ public class AspectRatioTextView extends AppCompatTextView {
         if (!TextUtils.isEmpty(mAspectRatioTitle)) {
             setText(mAspectRatioTitle);
         } else {
-            setText(String.format(Locale.US, "%d:%d", (int) mAspectRatioX, (int) mAspectRatioY));
+            if (Math.abs(mAspectRatioX - 1.91f) < 0.1f) {
+                setText("Horizontal");
+            } else if (Math.abs(mAspectRatioX - 4f) < 0.1f) {
+                setText("Vertical");
+            } else {
+                setText("Square");
+            }
+//            setText(String.format(Locale.US, "%d:%d", (int) mAspectRatioX, (int) mAspectRatioY));
         }
     }
 

@@ -316,6 +316,7 @@ public class UCropActivity extends AppCompatActivity {
             mWrapperStateRotate = findViewById(R.id.state_rotate);
             mWrapperStateRotate.setOnClickListener(mStateClickListener);
             mWrapperStateScale = findViewById(R.id.state_scale);
+            mWrapperStateScale.setVisibility(View.GONE);
             mWrapperStateScale.setOnClickListener(mStateClickListener);
 
             mLayoutAspectRatio = findViewById(R.id.layout_aspect_ratio);
@@ -324,7 +325,7 @@ public class UCropActivity extends AppCompatActivity {
 
             setupAspectRatioWidget(intent);
             setupRotateWidget();
-            setupScaleWidget();
+//            setupScaleWidget();
             setupStatesWrapper();
         }
     }
@@ -405,11 +406,11 @@ public class UCropActivity extends AppCompatActivity {
      * Use {@link #mActiveControlsWidgetColor} for color filter
      */
     private void setupStatesWrapper() {
-        ImageView stateScaleImageView = findViewById(R.id.image_view_state_scale);
+//        ImageView stateScaleImageView = findViewById(R.id.image_view_state_scale);
         ImageView stateRotateImageView = findViewById(R.id.image_view_state_rotate);
         ImageView stateAspectRatioImageView = findViewById(R.id.image_view_state_aspect_ratio);
 
-        stateScaleImageView.setImageDrawable(new SelectedStateListDrawable(stateScaleImageView.getDrawable(), mActiveControlsWidgetColor));
+//        stateScaleImageView.setImageDrawable(new SelectedStateListDrawable(stateScaleImageView.getDrawable(), mActiveControlsWidgetColor));
         stateRotateImageView.setImageDrawable(new SelectedStateListDrawable(stateRotateImageView.getDrawable(), mActiveControlsWidgetColor));
         stateAspectRatioImageView.setImageDrawable(new SelectedStateListDrawable(stateAspectRatioImageView.getDrawable(), mActiveControlsWidgetColor));
     }
@@ -641,7 +642,7 @@ public class UCropActivity extends AppCompatActivity {
 
     private void setAllowedGestures(int tab) {
         mGestureCropImageView.setScaleEnabled(mAllowedGestures[tab] == ALL || mAllowedGestures[tab] == SCALE);
-        mGestureCropImageView.setRotateEnabled(mAllowedGestures[tab] == ALL || mAllowedGestures[tab] == ROTATE);
+        mGestureCropImageView.setRotateEnabled(mAllowedGestures[tab] == ROTATE);
     }
 
     /**
