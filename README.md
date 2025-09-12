@@ -24,9 +24,9 @@
 	}
 	```
 
-    ``` implementation 'com.github.yalantis:ucrop:2.2.3' ``` - lightweight general solution 
+    ``` implementation 'com.github.yalantis:ucrop:2.2.11' ``` - lightweight general solution
 
-    ``` implementation 'com.github.yalantis:ucrop:2.2.3-native' ``` - get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
+    ``` implementation 'com.github.yalantis:ucrop:2.2.11-native' ``` - get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
 
 2. Add UCropActivity into your AndroidManifest.xml
 
@@ -37,28 +37,28 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     ```
 
-3. The uCrop configuration is created using the builder pattern.
-
-	```java
-    UCrop.of(sourceUri, destinationUri)
-        .withAspectRatio(16, 9)
-        .withMaxResultSize(maxWidth, maxHeight)
-        .start(context);
-    ```
-
-
-4. Override `onActivityResult` method and handle uCrop result.
+3. Register a callback for the uCrop result.
 
     ```java
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            final Uri resultUri = UCrop.getOutput(data);
-        } else if (resultCode == UCrop.RESULT_ERROR) {
-            final Throwable cropError = UCrop.getError(data);
-        }
-    }
+    private ActivityResultLauncher<Intent> activityResultLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    final Uri resultUri = UCrop.getOutput(result.getData());
+                } else if (result.getResultCode() == UCrop.RESULT_ERROR) {
+                    final Throwable cropError = UCrop.getError(result.getData());
+                }
+            });
     ```
+
+4. Create the uCrop configuration using the builder pattern.
+
+   ```java
+   UCrop.of(sourceUri, destinationUri)
+       .withAspectRatio(16, 9)
+       .withMaxResultSize(maxWidth, maxHeight)
+       .start(context, activityResultLauncher);
+   ```
+
 5. You may want to add this to your PROGUARD config:
 
     ```
@@ -75,7 +75,7 @@ uCrop builder class has method `withOptions(UCrop.Options options)` which extend
 
 Currently, you can change:
 
-   * image compression format (e.g. PNG, JPEG, WEBP), compression
+   * image compression format (e.g. PNG, JPEG), compression
    * image compression quality [0 - 100]. PNG which is lossless, will ignore the quality setting.
    * whether all gestures are enabled simultaneously
    * maximum size for Bitmap that is decoded from source Uri and used within crop view. If you want to override the default behaviour.
@@ -93,11 +93,29 @@ Since version 2.2.7 in case if you need to change transport protocol, setup time
 
 # Compatibility
 
-  * Library - Android ICS 4.0+ (API 14) (Android GINGERBREAD 2.3+ (API 10) for versions <= 1.3.2)
-  * Sample - Android ICS 4.0+ (API 14)
-  * CPU - armeabi armeabi-v7a x86 x86_64 arm64-v8a (for versions >= 2.1.2)
+  * Library - Android Lollipop 5.0+ (API 21) (Android ICS 4.0+ (API 14) for versions < 2.2.11)
+  * Sample - Android Lollipop 5.0+ (API 21)
+  * CPU - armeabi-v7a x86 x86_64 arm64-v8a (for versions >= 2.2.11)
 
 # Changelog
+
+### Version: 2.2.11
+
+*   Updated compileSdk and targetSdk to 36
+*   Added support for 16 KB page sizes
+*   Enabled edge-to-edge UI support
+*   And other improvements
+
+### Version: 2.2.10
+
+*   Fixed [#926](https://github.com/Yalantis/uCrop/issues/926)
+
+### Version: 2.2.9
+
+*   Update compileSdk and targetSdk versions up to 33
+*   Fixed [#867](https://github.com/Yalantis/uCrop/issues/867)
+*   Fixed [#873](https://github.com/Yalantis/uCrop/issues/873)
+*   And other improvements
 
 ### Version: 2.2.8
 
@@ -106,6 +124,20 @@ Since version 2.2.7 in case if you need to change transport protocol, setup time
 *   Add localizations
 *   Fixed [#609](https://github.com/Yalantis/uCrop/issues/609)
 *   Fixed [#794](https://github.com/Yalantis/uCrop/issues/794)
+
+### Version: 2.2.5
+
+*   Fixed [#584](https://github.com/Yalantis/uCrop/issues/584)
+*   Fixed [#598](https://github.com/Yalantis/uCrop/issues/598)
+*   Fixed [#543](https://github.com/Yalantis/uCrop/issues/543)
+*   Fixed [#602](https://github.com/Yalantis/uCrop/issues/602)
+*   And other improvements
+
+### Version: 2.2.4
+
+  * **AndroidX migration**
+  * Redesign
+  * Several fixes including [#550](https://github.com/Yalantis/uCrop/issues/550)
 
 ### Version: 2.2.3
 
@@ -116,8 +148,8 @@ Since version 2.2.7 in case if you need to change transport protocol, setup time
 
 ### Version: 2.2.2
 
-* uCrop fragment added
-* bugfix
+  * uCrop fragment added
+  * bugfix
 
 ### Version: 2.2.1
 
@@ -191,6 +223,9 @@ We’d be really happy if you sent us links to your projects where you use our c
 ## License
 
     Copyright 2017, Yalantis
+
+    Software doesn't collect, store or transfer data to Yalantis or third parties.
+    Emplacement of this Software is carried out locally at device.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
