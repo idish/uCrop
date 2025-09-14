@@ -34,8 +34,8 @@ android {
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:${androidx_appcompat_version}"
-    implementation "androidx.exifinterface:exifinterface:${androidx_exifinterface_version}"
-    implementation "androidx.transition:transition:${androidx_transition_version}"
-    implementation "com.squareup.okhttp3:okhttp:${okhttp_version}"
+    implementation "androidx.appcompat:appcompat:1.7.1"
+    implementation "androidx.exifinterface:exifinterface:1.4.1"
+    implementation "androidx.transition:transition:1.6.0"
+    implementation "com.squareup.okhttp3:okhttp:5.1.0"
 }
