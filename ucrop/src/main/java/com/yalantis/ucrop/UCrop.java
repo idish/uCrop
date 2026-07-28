@@ -283,6 +283,7 @@ public class UCrop {
         public static final String EXTRA_UCROP_LOGO_COLOR = EXTRA_PREFIX + ".UcropLogoColor";
 
         public static final String EXTRA_HIDE_BOTTOM_CONTROLS = EXTRA_PREFIX + ".HideBottomControls";
+        public static final String EXTRA_HIDE_ASPECT_RATIO_TAB = EXTRA_PREFIX + ".HideAspectRatioTab";
         public static final String EXTRA_FREE_STYLE_CROP = EXTRA_PREFIX + ".FreeStyleCrop";
 
         public static final String EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT = EXTRA_PREFIX + ".AspectRatioSelectedByDefault";
@@ -490,6 +491,16 @@ public class UCrop {
          */
         public void setHideBottomControls(boolean hide) {
             mOptionBundle.putBoolean(EXTRA_HIDE_BOTTOM_CONTROLS, hide);
+        }
+
+        /**
+         * @param hide - set to true to drop the aspect ratio tab from the bottom
+         *             controls (shown by default), leaving the remaining tools
+         *             available. Useful when the caller fixes the aspect ratio
+         *             itself and must not let the user change it.
+         */
+        public void setHideAspectRatioTab(boolean hide) {
+            mOptionBundle.putBoolean(EXTRA_HIDE_ASPECT_RATIO_TAB, hide);
         }
 
         /**

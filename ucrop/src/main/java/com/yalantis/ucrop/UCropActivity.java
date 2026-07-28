@@ -100,6 +100,7 @@ public class UCropActivity extends AppCompatActivity {
     private int mLogoColor;
 
     private boolean mShowBottomControls;
+    private boolean mHideAspectRatioTab;
     private boolean mShowLoader = true;
 
     private UCropView mUCropView;
@@ -263,6 +264,10 @@ public class UCropActivity extends AppCompatActivity {
         int aspectRationSelectedByDefault = intent.getIntExtra(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, 0);
         ArrayList<AspectRatio> aspectRatioList = intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS);
 
+        if (mHideAspectRatioTab && mWrapperStateAspectRatio != null) {
+            mWrapperStateAspectRatio.setVisibility(View.GONE);
+        }
+
         if (aspectRatioX >= 0 && aspectRatioY >= 0) {
             if (mWrapperStateAspectRatio != null) {
                 mWrapperStateAspectRatio.setVisibility(View.GONE);
@@ -311,6 +316,7 @@ public class UCropActivity extends AppCompatActivity {
         mToolbarTitle = mToolbarTitle != null ? mToolbarTitle : getResources().getString(R.string.ucrop_label_edit_photo);
         mLogoColor = intent.getIntExtra(UCrop.Options.EXTRA_UCROP_LOGO_COLOR, ContextCompat.getColor(this, R.color.ucrop_color_default_logo));
         mShowBottomControls = !intent.getBooleanExtra(UCrop.Options.EXTRA_HIDE_BOTTOM_CONTROLS, false);
+        mHideAspectRatioTab = intent.getBooleanExtra(UCrop.Options.EXTRA_HIDE_ASPECT_RATIO_TAB, false);
         mRootViewBackgroundColor = intent.getIntExtra(UCrop.Options.EXTRA_UCROP_ROOT_VIEW_BACKGROUND_COLOR, ContextCompat.getColor(this, R.color.ucrop_color_crop_background));
 
         setupAppBar();
@@ -614,14 +620,64 @@ public class UCropActivity extends AppCompatActivity {
 
     private void setInitialState() {
         if (mShowBottomControls) {
+            // Select whichever tool is actually on screen. Any of the three can
+            // be hidden (a caller-fixed aspect ratio drops the crop tab, for
+            // example), and landing on a hidden one leaves an empty panel.
             if (mWrapperStateAspectRatio.getVisibility() == View.VISIBLE) {
                 setWidgetState(R.id.state_aspect_ratio);
+            } else if (mWrapperStateRotate.getVisibility() == View.VISIBLE) {
+                setWidgetState(R.id.state_rotate);
             } else {
                 setWidgetState(R.id.state_scale);
             }
+            collapseStatesWrapperIfSingleTool();
         } else {
             setAllowedGestures(0);
         }
+    }
+
+    /**
+     * With only one tool left there is nothing to switch between, so the tab
+     * strip is dead weight — drop it and leave the tool itself on screen.
+     */
+    private void collapseStatesWrapperIfSingleTool() {
+        int visibleTools = 0;
+        if (mWrapperStateAspectRatio.getVisibility() == View.VISIBLE) visibleTools++;
+        if (mWrapperStateRotate.getVisibility() == View.VISIBLE) visibleTools++;
+        if (mWrapperStateScale.getVisibility() == View.VISIBLE) visibleTools++;
+
+        if (visibleTools > 1) {
+            return;
+        }
+
+        View wrapperStates = findViewById(R.id.wrapper_states);
+        if (wrapperStates != null) {
+            wrapperStates.setVisibility(View.GONE);
+        }
+
+        // wrapper_states is the bottom-most view and is what carries the
+        // navigation-bar inset. With it gone the tool wheel would sit
+        // underneath the system bars and be near-impossible to touch, so the
+        // tool container takes the inset over.
+        final View wrapperControls = findViewById(R.id.wrapper_controls);
+        if (wrapperControls == null) {
+            return;
+        }
+
+        final int wrapperControlsHeight =
+                getResources().getDimensionPixelSize(R.dimen.ucrop_height_wrapper_controls);
+        ViewCompat.setOnApplyWindowInsetsListener(wrapperControls, (view, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPaddingRelative(insets.left, 0, insets.right, insets.bottom);
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            int newWrapperControlsHeight = wrapperControlsHeight + insets.bottom;
+            if (layoutParams.height != newWrapperControlsHeight) {
+                layoutParams.height = newWrapperControlsHeight;
+                view.setLayoutParams(layoutParams);
+            }
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(wrapperControls);
     }
 
     private void setWidgetState(@IdRes int stateViewId) {
